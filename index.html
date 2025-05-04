@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CASTLES</title>
+  <style>
+    canvas { background-image: url("images/download (1).png"); display: block; margin: 0 auto; border: 10px solid #1f0606; }
+    body { background-image: url("images/LOBBY.png");text-align: center; font-family: sans-serif; background-size: cover; /* Ensures the image covers the entire screen */
+background-position: center; /* Centers the image */
+background-repeat: no-repeat; /* Prevents the image from repeating */}
+    a {margin-top: 10px; margin-bottom: 10px;}
+
+
+    #scoreDisplay {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px 20px;
+  border-radius: 10px;
+  z-index: 5;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 30, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.menu {
+  background: #222;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+}
+
+.menu button {
+  margin: 10px;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+
+
+
+  </style>
+</head>
+<body>
+  <!-- Tutorial Overlay -->
+  <div id="tutorialOverlay" style="
+  position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: url('images/LOBBY.png');
+background-size: cover; /* Ensures the image covers the entire screen */
+background-position: center; /* Centers the image */
+background-repeat: no-repeat; /* Prevents the image from repeating */
+color: white;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+
+">
+
+  
+  
+<div style="display: flex; justify-content: center; align-items: center; gap: 30px;">
+  <button onclick="prevStep()" style="font-size: 40px; background: none; border: none; color: white; cursor: pointer;">⬅</button>
+  <span id="tutorialStepText" style="font-size: 40px;">Step 1 of 6</span>
+  <button onclick="nextStep()" style="font-size: 40px; background: none; border: none; color: white; cursor: pointer;">➡</button>
+</div>
+
+<button id="startGameButton" onclick="startGameFromTutorial()" style="
+  padding: 25px 120px;
+  margin-top: 30px; /* Changed from margin-bottom: -50px */
+  cursor: pointer;
+  background: url('images/Start-Game.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  position: relative;
+  z-index: 10;
+">
+</button>
+
+
+  <img id="tutorialImage"
+     src="images/How-to-Play1.png"
+     style="width: 90vw; max-width: 1000px; height: auto; margin-bottom: 20px;">
+
+  
+  
+
+</div>
+
+<div id="lobbyScreen" style="
+  position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: url('images/LOBBY.png');
+background-size: cover; /* Ensures the image covers the entire screen */
+background-position: center; /* Centers the image */
+background-repeat: no-repeat; /* Prevents the image from repeating */
+color: white;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+
+">
+  <img src="images/CASTLES (1).png" style="width: 500px; height: auto;">
+  <button onclick="startGameFromTutorial()" style="
+    padding: 25px 120px;
+    margin: 10px;
+    cursor: pointer;
+    background: url('images/Start-Game.png');
+    background-size: contain;
+    border: none;
+    border-radius: 8px;
+  
+    color: white;
+  "></button>
+  <button onclick="openTutorial()" style="
+    padding: 25px 110px;
+    font-size: 24px;
+    margin: 10px;
+    cursor: pointer;
+    background: url('images/Tutorial.png');
+    background-size: contain;
+    border: none;
+    border-radius: 8px;
+    
+    color: white;
+  "></button>
+</div>
+
+
+  <div id="titleContainer" style="text-align: center; margin-top: 20px;">
+    <img src="images/CASTLES (1).png" style="width: 500px; height: auto;">
+  </div>
+<!-- Add this right before the game canvas or wherever you'd like to display the difficulty options -->
+<div id="difficultyContainer" style="text-align: center; margin-top: 20px; display: none;">
+  <button id="easyButton" style="font-size: 20px; padding: 10px 20px; margin: 10px;">Easy</button>
+  <button id="mediumButton" style="font-size: 20px; padding: 10px 20px; margin: 10px;">Medium</button>
+  <button id="hardButton" style="font-size: 20px; padding: 10px 20px; margin: 10px;">Hard</button>
+</div>
+
+<!-- Difficulty Selection Overlay -->
+<div id="difficultyOverlay" class="overlay hidden">
+  <div class="menu">
+    <img src="images/Difficulty.png";> <br>
+    <button onclick="startGame('easy')" style="
+    padding: 25px 90px;
+    margin: 10px;
+    cursor: pointer;
+    background: url('images/Easyy.png');
+    background-size: contain;
+    border: none;
+    border-radius: 8px;"></button>
+    <button onclick="startGame('medium')"style="
+    padding: 25px 95px;
+    margin: 10px;
+    cursor: pointer;
+    background: url('images/medium.png');
+    background-size: contain;
+    border: none;
+    border-radius: 8px;"></button>
+    <button onclick="startGame('hard')"style="
+    padding: 25px 85px;
+    margin: 10px;
+    cursor: pointer;
+    background: url('images/hard.png');
+    background-size: contain;
+    border: none;
+    border-radius: 8px;"></button>
+  </div>
+</div>
+
+
+
+  <div id="gameContainer" style="position: relative; display: inline-block;">
+    <div id="scoreDisplay">Score: 0</div>
+    <canvas id="gameCanvas" width="1000" height="700"></canvas>
+  </div>
+
+
+  <!-- rest of your elements -->
+
+
+ 
+  <div id="endScreen" style="
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 40px 80px;
+    border-radius: 20px;
+    font-size: 40px;
+    font-weight: bold;
+    opacity: 0;
+    transition: all 0.5s ease;
+    z-index: 10;
+    text-align: center;
+    pointer-events: none;
+  ">
+    <div id="endMessage">Victory!</div>
+    <button id="restartButton" style="
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 20px;
+      background: white;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
+    ">Restart</button>
+  </div>
+
+  <img id="castle-player" src="images/player.png" hidden>
+  <img id="castle-enemy" src="images/neutral3.png" hidden>
+  <img id="castle-neutral" src="images/enemy2.png" hidden>
+  <img id="troop-player" src="images/troops.png" hidden>
+  <img id="troop-enemy" src="images/troop-enemy.png" hidden>
+
+
+  <script>
+ function startGameFromTutorial() {
+  document.getElementById("lobbyScreen").style.display = "none";
+  document.getElementById("gameContainer").style.display = "block";
+  document.getElementById("tutorialOverlay").style.display = "none";
+
+  showDifficultyOverlay(); // This is good
+}
+
+
+
+function openTutorial() {
+  document.getElementById("lobbyScreen").style.display = "none";
+  document.getElementById("tutorialOverlay").style.display = "flex";
+  currentStep = 0;
+  updateTutorial();
+}
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("gameContainer").style.display = "none";
+  document.getElementById("tutorialOverlay").style.display = "none";
+  updateTutorial(); // Keep this here
+});
+
+
+const tutorialSteps = [
+  "images/Step-1.png",
+  "images/step2.png",
+  "images/step3.png",
+  "images/step4.png",
+  "images/step5.png",
+  "images/step6.png"
+];
+
+let currentStep = 0;
+
+function updateTutorial() {
+  const img = document.getElementById("tutorialImage");
+  const label = document.getElementById("tutorialStepText");
+  const startBtn = document.getElementById("startGameButton");
+
+  img.src = tutorialSteps[currentStep];
+  label.textContent = `Step ${currentStep + 1} of ${tutorialSteps.length}`;
+
+  // Show start button only on the last step
+  if (currentStep === tutorialSteps.length - 1) {
+    startBtn.style.display = "inline-block";
+  } else {
+    startBtn.style.display = "none";
+  }
+}
+
+function nextStep() {
+  if (currentStep < tutorialSteps.length - 1) {
+    currentStep++;
+    updateTutorial();
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    updateTutorial();
+  }
+}
+
+
+
+// Called when "Start" is pressed
+function showDifficultyOverlay() {
+  document.getElementById('difficultyOverlay').classList.remove('hidden');
+}
+
+// Called when difficulty is selected
+// Called when difficulty is selected
+function startGame(difficulty) {
+  let aiSpeed, troopRate;
+
+  switch (difficulty) {
+    case 'easy':
+      aiSpeed = 1.0;
+      troopRate = 1.0;
+      break;
+    case 'medium':
+      aiSpeed = 1.5;
+      troopRate = 1.0;
+      break;
+    case 'hard':
+      aiSpeed = 2.0;
+      troopRate = 1.0;
+      break;
+  }
+
+  // Store difficulty settings globally
+  window.gameSettings = { aiSpeed, troopRate, difficulty };
+
+  // Set AI speed factor globally
+  aiSpeedFactor = aiSpeed;
+
+  // Hide overlays and flags
+  document.getElementById('difficultyOverlay').classList.add('hidden');
+  document.getElementById('difficultyContainer').style.display = 'none';
+  gameStarted = true;
+
+  // Start game
+  initGame();
+
+  // Add player and enemy starting castles
+  castles.push({
+    id: 'playerStart',
+    owner: 'player',
+    x: 100, y: 100,
+    troops: Infinity,  // Optional visual indicator
+    infiniteTroops: true,
+    troopInterval: 1000,
+    troopTimer: 0
+  });
+
+  castles.push({
+    id: 'enemyStart',
+    owner: 'enemy',
+    x: 700, y: 100,
+    troops: Infinity,  // Optional visual indicator
+    infiniteTroops: true,
+    troopInterval: 1000,
+    troopTimer: 0
+  });
+  
+  // Initialize random castles
+  createRandomCastles();
+}
+
+// Your existing code continues here...
+
+
+
+
+
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreDisplay = document.getElementById("scoreDisplay"); // NEW
+    const endScreen = document.getElementById("endScreen");
+    const endMessage = document.getElementById("endMessage");
+    const restartButton = document.getElementById("restartButton");
+
+    
+    
+  
+// Difficulty levels
+const DIFFICULTY = {
+  EASY: 1,
+  MEDIUM: 1.5,
+  HARD: 2
+};
+
+// AI speed factor (default to Easy)
+let aiSpeedFactor = DIFFICULTY.EASY;
+
+
+    let score = 0;  // Initialize score
+    let playerScore = 0;
+    let displayedScore = 0; // The score that will be animated
+    let animationInProgress = false; // Flag to track if animation is running
+    
+
+    // Event listeners for difficulty buttons
+    document.getElementById('easyButton').addEventListener('click', () => startGame('easy'));
+document.getElementById('mediumButton').addEventListener('click', () => startGame('medium'));
+document.getElementById('hardButton').addEventListener('click', () => startGame('hard'));
+
+
+
+
+    function updateScoreDisplay() {
+      scoreDisplay.textContent = `Score: ${score}`;
+      playerScore = score; // Save the total score to animate at the end
+    }
+
+
+    function animateScore() {
+      if (displayedScore < playerScore) {
+        displayedScore += Math.ceil(playerScore / 100); // Add a little bit each frame (adjust speed here)
+        updateEndScoreDisplay();
+        requestAnimationFrame(animateScore); // Keep animating
+      } else {
+        displayedScore = playerScore; // Make sure the final score is reached
+        updateEndScoreDisplay();
+      }
+    }
+
+
+    function updateEndScoreDisplay() {
+      const endScoreElement = document.getElementById("endScore");
+      endScoreElement.textContent = 'Total Score: ' + displayedScore;
+    }
+    const TEAM = {
+      PLAYER: "blue",
+      NEUTRAL: "gray",
+      ENEMY: "red"
+    };
+
+
+    class Castle {
+  constructor(x, y, owner) {
+    this.x = x;
+    this.y = y;
+    this.radius = 60;
+    this.owner = owner;
+    this.troops = owner === TEAM.PLAYER ? 10 : 10;  // Neutral castles also start with 10 troops
+    this.selected = false;
+    this.lastAIAttack = 0;
+    this.lastTroopGeneration = 0;
+    this.neighbors = [];
+    this.canGenerateTroops = (owner !== TEAM.PLAYER && owner !== TEAM.NEUTRAL) || (gameStarted && playerHasSentTroops);  // Prevent neutral castles from generating troops
+  }
+
+  update(deltaTime) {
+    this.lastTroopGeneration += deltaTime;
+
+    // Only generate troops if conditions are met and the castle is not neutral
+    if (
+      this.lastTroopGeneration >= 1000 &&
+      gameStarted &&                // game must have started
+      playerHasSentTroops &&        // player must have sent troops
+      this.canGenerateTroops        // castle is allowed to generate
+    ) {
+      this.troops += 1;
+      this.lastTroopGeneration = 0;
+    }
+  }
+
+  draw() {
+    let img;
+    if (this.owner === TEAM.PLAYER) {
+      img = document.getElementById("castle-player");
+    } else if (this.owner === TEAM.ENEMY) {
+      img = document.getElementById("castle-enemy");
+    } else {
+      img = document.getElementById("castle-neutral");
+    }
+
+    const size = this.radius * 2;  // Castle size based on radius
+    ctx.drawImage(img, this.x - this.radius, this.y - this.radius, size, size);  // Draw the image
+
+    if (this.selected) {
+      ctx.save();
+      ctx.strokeStyle = "yellow";
+      ctx.lineWidth = 5;
+      ctx.shadowColor = "yellow";
+      ctx.shadowBlur = 15;
+      ctx.strokeRect(this.x - this.radius, this.y - this.radius, size, size);
+      ctx.restore();
+    }
+
+    // Draw troop count
+    ctx.font = "16px Arial";
+    ctx.textAlign = "center";
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "black";
+    ctx.strokeText(Math.floor(this.troops), this.x, this.y + 5);
+    ctx.fillStyle = "white";
+    ctx.fillText(Math.floor(this.troops), this.x, this.y + 5);
+  }
+
+  isClicked(mx, my) {
+    const dx = this.x - mx;
+    const dy = this.y - my;
+    return dx * dx + dy * dy < this.radius * this.radius;
+  }
+}
+
+
+
+class Troop {
+  constructor(from, to, amount, owner) {
+    this.from = from;
+    this.to = to;
+    this.x = from.x;
+    this.y = from.y;
+    this.amount = amount;
+    this.owner = owner;
+    this.isArrived = false;  // New flag to track troop arrival status
+
+    // Calculate the direction and velocity towards the target
+    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+    this.vx = Math.cos(angle) * 0.8;  // Adjust speed here
+    this.vy = Math.sin(angle) * 0.8;
+  }
+
+  update() {
+    if (this.isArrived) {
+      return false;  // Prevent further updates if the troop has already arrived
+    }
+
+    // Move the troop towards its target
+    this.x += this.vx;
+    this.y += this.vy;
+
+    // Check if the troop has arrived at the destination
+    const dx = this.x - this.to.x;
+    const dy = this.y - this.to.y;
+
+    // Distance squared to avoid floating point precision issues with sqrt()
+    if (dx * dx + dy * dy < this.to.radius * this.to.radius) {
+      this.arrive();
+      return true;  // Troop has arrived at the destination
+    }
+
+    return false;
+  }
+
+  arrive() {
+    if (this.isArrived) {
+      return;  // Prevent multiple arrivals
+    }
+    this.isArrived = true;  // Mark the troop as arrived
+
+    // Logic for what happens when the troop reaches its destination castle
+    if (this.to.owner === this.owner) {
+      // Add troops to the castle if the same player owns it
+      this.to.troops += this.amount;
+    } else {
+      // Subtract troops if the castle is owned by an enemy
+      this.to.troops -= this.amount;
+      if (this.to.troops <= 0) {
+        // Capture the castle if troops are defeated
+        this.to.owner = this.owner;
+        this.to.troops = Math.abs(this.to.troops);  // Ensure troops are positive
+        this.to.canGenerateTroops = true;  // Allow troop generation after capture
+
+        // Add score for capturing the castle
+        if (this.owner === TEAM.PLAYER) {
+          score += 10;
+          updateScoreDisplay();
+        }
+      }
+    }
+
+    // Only player earns 1 point for troop arrival
+    if (this.owner === TEAM.PLAYER) {
+      score += 1;
+      updateScoreDisplay();  // Update the score display
+    }
+  }
+
+  draw() {
+    // Draw the troop on the canvas
+    const imgId = this.owner === TEAM.PLAYER ? "troop-player" : "troop-enemy";
+    const img = document.getElementById(imgId);
+    const size = 40;  // Size of the troop image
+    ctx.drawImage(img, this.x - size / 2, this.y - size / 2, size, size);
+  }
+}
+
+const castles = [];
+const troops = [];
+let selectedCastle = null;
+let gameStarted = false;  // Track if the game has started
+let playerHasSentTroops = false; // Track if player has sent troops
+
+let lastTime = performance.now();
+let gameOver = false;
+
+function isOverlap(newCastle) {
+  const minimumDistance = newCastle.radius * 2 + 20; // Adjust padding between castles
+  for (let castle of castles) {
+    const dx = newCastle.x - castle.x;
+    const dy = newCastle.y - castle.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance < minimumDistance) {
+      return true;  // The castles overlap
+    }
+  }
+  return false;  // No overlap
+}
+
+function createRandomCastles() {
+  const allCastles = [];
+
+
+  // Player castle (fixed near the left center)
+  const playerCastle = new Castle(250, canvas.height / 2, TEAM.PLAYER);
+  allCastles.push(playerCastle);
+
+
+  // Enemy castle (fixed near the right center)
+  const enemyCastle = new Castle(canvas.width - 250, canvas.height / 2, TEAM.ENEMY);
+  allCastles.push(enemyCastle);
+
+
+  // Setup grid
+  const gridCols = 6; // number of columns
+  const gridRows = 4; // number of rows
+  const gridSpacingX = (canvas.width - 400) / (gridCols - 1); // Increase spacing to keep it centered
+  const gridSpacingY = (canvas.height - 200) / (gridRows - 1); // Increase vertical space
+  const gridStartX = 200; // More centered starting position
+  const gridStartY = 100; // More centered vertical start
+
+
+  // Create grid points
+  const gridPoints = [];
+  for (let row = 0; row < gridRows; row++) {
+    for (let col = 0; col < gridCols; col++) {
+      const x = gridStartX + col * gridSpacingX;
+      const y = gridStartY + row * gridSpacingY;
+
+
+      // Skip points near the player and enemy castles
+      const distToPlayer = Math.hypot(x - playerCastle.x, y - playerCastle.y);
+      const distToEnemy = Math.hypot(x - enemyCastle.x, y - enemyCastle.y);
+
+
+      if (distToPlayer > 150 && distToEnemy > 150) { // 150px safe radius
+        gridPoints.push({ x, y });
+      }
+    }
+  }
+
+
+  // Shuffle grid points
+  shuffleArray(gridPoints);
+
+
+  // Pick points for neutral castles
+  const neutralCount = 5;
+  for (let i = 0; i < neutralCount; i++) {
+    const point = gridPoints[i];
+
+
+    // Add small random jitter (±20px)
+    const jitterAmount = 20;
+    const jitterX = (Math.random() - 0.5) * 2 * jitterAmount;
+    const jitterY = (Math.random() - 0.5) * 2 * jitterAmount;
+
+
+    const newCastle = new Castle(point.x + jitterX, point.y + jitterY, TEAM.NEUTRAL);
+    allCastles.push(newCastle);
+  }
+
+
+  castles.push(...allCastles);
+}
+
+
+// Helper to shuffle array
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+function updateAI(deltaTime) {
+  // Only run AI if the player has sent troops
+  if (!playerHasSentTroops) return;
+
+  for (let castle of castles) {
+    if (castle.owner === TEAM.ENEMY) {
+      castle.lastAIAttack += deltaTime;
+
+      // Adjust AI attack frequency based on difficulty
+      const aiAttackInterval = 1000 / aiSpeedFactor; // Speed up or slow down the AI's attack frequency
+      if (castle.lastAIAttack > aiAttackInterval && castle.troops >= 1) {
+        castle.lastAIAttack = 0;
+
+        // Generate a random target for AI
+        const targets = castles.filter(c => c.owner !== TEAM.ENEMY);
+        const target = targets[Math.floor(Math.random() * targets.length)];
+
+        // Deduct troops for the attack and create a new troop
+        castle.troops -= 1;
+        troops.push(new Troop(castle, target, 2, TEAM.ENEMY));
+      }
+    }
+  }
+}
+
+
+
+
+    function update() {
+      const now = performance.now();
+      const deltaTime = now - lastTime;
+      lastTime = now;
+
+
+      for (let castle of castles) {
+        castle.update(deltaTime);
+      }
+
+
+      updateAI(deltaTime);
+
+
+      for (let i = troops.length - 1; i >= 0; i--) {
+        if (troops[i].update()) {
+          troops.splice(i, 1);
+        }
+      }
+    }
+
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+     
+
+
+      for (let castle of castles) {
+        castle.draw();
+      }
+
+
+      for (let t of troops) {
+        t.draw();
+      }
+    }
+
+    function showEndScreen(message, imagePath = null) {
+  // Set the end message text
+  endMessage.textContent = message;
+
+
+  // Clear any previously added content except endMessage
+  while (endScreen.children.length > 1) {
+    endScreen.removeChild(endScreen.lastChild);
+  }
+
+
+  // Show the end screen
+  endScreen.style.opacity = 1;
+  endScreen.style.transform = 'translate(-50%, -50%) scale(1)';
+  endScreen.style.pointerEvents = "auto";
+
+
+  // Create a container for the content (image + restart button)
+  const contentContainer = document.createElement("div");
+
+
+  contentContainer.style.textAlign = "center"; // Center the content
+
+
+  // If an image path is provided, display the image
+  if (imagePath) {
+    const endImage = document.createElement("img");
+    endImage.src = imagePath; // Set the image source
+    endImage.alt = "End Game Image"; // Optional alt text for accessibility
+    endImage.style.width = "400px"; // Adjust size as needed
+    endImage.style.display = "block"; // Block-level element
+    endImage.style.margin = "20px auto"; // Center the image
+
+
+    contentContainer.appendChild(endImage);
+  }
+
+
+  // Create and append the total score display
+  const scoreDisplayElement = document.createElement("div");
+  scoreDisplayElement.id = "endScore"; // Set an ID to target it
+  scoreDisplayElement.style.fontSize = "36px"; // Customize the font size
+  scoreDisplayElement.style.color = "white";
+  scoreDisplayElement.style.marginTop = "20px"; // Optional styling
+  contentContainer.appendChild(scoreDisplayElement);
+
+
+  // Add the restart button at the end
+  restartButton.style.display = "inline-block"; // Make restart button visible
+  contentContainer.appendChild(restartButton); // Add restart button after the image
+
+
+  // Append the content container to the end screen
+  endScreen.appendChild(contentContainer);
+
+
+  // Start the animated score
+  if (!animationInProgress) {
+    animationInProgress = true;
+    animateScore();
+  }
+}
+
+
+function checkWin() {
+    if (gameOver) return;
+
+
+    const enemiesLeft = castles.some(c => c.owner === TEAM.ENEMY);
+    const neutralsLeft = castles.some(c => c.owner === TEAM.NEUTRAL);
+    const playerExists = castles.some(c => c.owner === TEAM.PLAYER);
+
+
+    // Check for game over condition (player lost)
+    if (!playerExists) {
+        showEndScreen("", "images/GAME-OVER.png"); // Example for a loss image
+        gameOver = true;
+    }
+
+
+    // Check for victory condition (no enemies or neutrals left)
+    if (!enemiesLeft && !neutralsLeft) {
+        showEndScreen("", "images/VICTORY.png"); // Example for a victory image
+        gameOver = true;
+    }
+}
+
+canvas.addEventListener('click', (event) => {
+  if (gameOver) return;
+
+  const mx = event.offsetX;
+  const my = event.offsetY;
+
+  let clickedOnCastle = false;
+
+  for (let castle of castles) {
+    if (castle.isClicked(mx, my)) {
+      clickedOnCastle = true;
+
+      if (castle.owner === TEAM.PLAYER) {
+        if (!selectedCastle) {
+          selectedCastle = castle;
+          selectedCastle.selected = true;
+        } else if (selectedCastle === castle) {
+          selectedCastle.selected = false;
+          selectedCastle = null;
+        }
+      } else if (selectedCastle && selectedCastle.owner === TEAM.PLAYER) {
+        if (selectedCastle.troops > 0) {
+          selectedCastle.troops -= 1;
+          troops.push(new Troop(selectedCastle, castle, 2, TEAM.PLAYER));
+
+          // If the player sends troops to another castle, set the flag to true
+          if (selectedCastle !== castle) {
+            playerHasSentTroops = true;
+            selectedCastle.canGenerateTroops = true;  // Allow troop generation now
+          }
+
+          if (!gameStarted) {
+            gameStarted = true;  // Start the game when the first troop is sent
+          }
+        }
+      }
+
+      break;
+    }
+  }
+
+  if (!clickedOnCastle && selectedCastle) {
+    selectedCastle.selected = false;
+    selectedCastle = null;
+  }
+
+  if (selectedCastle && selectedCastle.owner === TEAM.PLAYER) {
+    for (let castle of castles) {
+      if (castle.isClicked(mx, my) && castle !== selectedCastle) {
+        if (selectedCastle.troops > 0) {
+          selectedCastle.troops -= 1;
+          troops.push(new Troop(selectedCastle, castle, 1, TEAM.PLAYER));
+
+          // If the player sends troops to another castle, set the flag to true
+          if (selectedCastle !== castle) {
+            playerHasSentTroops = true;
+            selectedCastle.canGenerateTroops = true;  // Allow troop generation now
+          }
+
+          if (!gameStarted) {
+            gameStarted = true;  // Start the game when the first troop is sent
+          }
+        }
+        break;
+      }
+    }
+  }
+});
+
+
+    restartButton.addEventListener('click', () => {
+  document.location.reload();
+});
+
+
+    function gameLoop() {
+  if (!gameOver) {
+    update();
+    draw();
+    checkWin();
+  }
+  requestAnimationFrame(gameLoop);
+}
+
+
+    createRandomCastles();
+    gameLoop();
+  </script>
+</body>
+</html>
+
+
+
+
+
