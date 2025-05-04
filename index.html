@@ -78,7 +78,16 @@ flex-direction: column;
 justify-content: center;
 align-items: center;
 
-">
+"
+><button onclick="goBackToLobby()" style="
+    padding: 22px 60px;
+    margin: 10px;
+    cursor: pointer;
+    background: url('images/Back.png');
+    background-size: contain;
+    border: none;
+    border-radius: 8px;
+  "></button>
 
   
   
@@ -171,6 +180,8 @@ align-items: center;
 <!-- Difficulty Selection Overlay -->
 <div id="difficultyOverlay" class="overlay hidden">
   <div class="menu">
+    
+
     <img src="images/Difficulty.png";> <br>
     <button onclick="startGame('easy')" style="
     padding: 25px 90px;
@@ -195,14 +206,36 @@ align-items: center;
     background: url('images/hard.png');
     background-size: contain;
     border: none;
-    border-radius: 8px;"></button>
+    border-radius: 8px;"></button> <br>
+    
+<button onclick="goBackToLobby()" style="
+    padding: 22px 60px;
+    margin: 10px;
+    cursor: pointer;
+    background: url('images/Back.png');
+    background-size: contain;
+    border: none;
+    border-radius: 8px;
+  "></button>
+
   </div>
 </div>
 
 
-
+<button onclick="goBackToLobby()" style="
+    padding: 22px 60px;
+    margin: 10px;
+    cursor: pointer;
+    background: url('images/Back.png');
+    background-size: contain;
+    border: none;
+    border-radius: 8px;
+  "></button>
   <div id="gameContainer" style="position: relative; display: inline-block;">
+    
     <div id="scoreDisplay">Score: 0</div>
+    <div id="gameContainer" style="position: relative; display: inline-block;">
+
     <canvas id="gameCanvas" width="1000" height="700"></canvas>
   </div>
 
@@ -250,6 +283,30 @@ align-items: center;
 
 
   <script>
+     function goBackToLobby() {
+    document.getElementById("difficultyOverlay").classList.add("hidden");
+    document.getElementById("gameContainer").style.display = "none";
+    document.getElementById("lobbyScreen").style.display = "flex";
+  }
+
+  function startGame(difficulty) {
+    document.getElementById("difficultyOverlay").classList.add("hidden");
+    document.getElementById("lobbyScreen").style.display = "none";
+    document.getElementById("gameContainer").style.display = "inline-block";
+    // Your game initialization logic here...
+    console.log("Starting game with difficulty:", difficulty);
+  }
+
+  function startGameFromTutorial() {
+    document.getElementById("tutorialOverlay").style.display = "none";
+    document.getElementById("difficultyOverlay").classList.remove("hidden");
+    document.getElementById("lobbyScreen").style.display = "none";
+  }
+
+  function openTutorial() {
+    document.getElementById("lobbyScreen").style.display = "none";
+    document.getElementById("tutorialOverlay").style.display = "flex";
+  }
  function startGameFromTutorial() {
   document.getElementById("lobbyScreen").style.display = "none";
   document.getElementById("gameContainer").style.display = "block";
